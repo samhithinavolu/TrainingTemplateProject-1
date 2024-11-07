@@ -7,6 +7,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.SimpleMotorSubsystem;
 
 /**
@@ -20,6 +21,9 @@ public class RobotContainer {
 
   CommandXboxController controller = new CommandXboxController(0);
   SimpleMotorSubsystem motorSubsystem = new SimpleMotorSubsystem();
+  Drivetrain drivetrain = new Drivetrain();
+  CommandXboxController Controller = new CommandXboxController(0);
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
@@ -27,6 +31,13 @@ public class RobotContainer {
 
     controller.a().onTrue(motorSubsystem.forward());
     controller.b().onTrue(motorSubsystem.stop());
+
+    drivetrain.setDefaultCommand(drivetrain.arcadeDrive(()->
+    {
+         Controller.getLeftX(); 
+         Controller.getLeftY();
+    }));
+    //Controller.leftStick().
   }
 
   /**
