@@ -34,6 +34,14 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+
+    controller.b().whileTrue(drivetrain.setMaxSpeed(0));
+    controller.b().whileFalse(drivetrain.setMaxSpeed(4));
+    controller.x().whileTrue(intake.intakeSpeed(0.1));
+    controller.x().whileFalse(intake.intakeSpeed(0));
+    controller.y().whileTrue(intake.intakeSpeed(-0.1));
+    controller.y().whileFalse(intake.intakeSpeed(0));
+
   }
 
   /**

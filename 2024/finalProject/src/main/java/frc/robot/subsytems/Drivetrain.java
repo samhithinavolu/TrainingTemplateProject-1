@@ -18,10 +18,12 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj.simulation.AnalogGyroSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase{
@@ -39,7 +41,7 @@ public class Drivetrain extends SubsystemBase{
   private static final int kEncoderResolution = -4096;
 
   private final PWMSparkMax leftMotor = new PWMSparkMax(0);
-  private final PWMSparkMax rightMotor = new PWMSparkMax(0);
+  private final PWMSparkMax rightMotor = new PWMSparkMax(1);
 
   private final Encoder leftEncoder,rightEncoder;
   private final EncoderSim leftEncoderSim, rightEncoderSim;
@@ -66,7 +68,7 @@ public class Drivetrain extends SubsystemBase{
       new DifferentialDriveOdometry(
           gyro.getRotation2d(), leftEncoder.getDistance(), rightEncoder.getDistance());
 
-    diffDrive = new DifferentialDrive(leftMotor, rightMotor);
+    DifferentialDrive diffDrive = new DifferentialDrive(leftMotor, rightMotor);
 
     leftEncoderSim = new EncoderSim(leftEncoder);
     rightEncoderSim = new EncoderSim(rightEncoder);
@@ -91,6 +93,7 @@ public class Drivetrain extends SubsystemBase{
    * @param rot the rotation from -1 to 1
    */
   public void drive(DoubleSupplier xSpeed, DoubleSupplier rot){
+    DifferentialDrive diffDrive = new DifferentialDrive(leftMotor, rightMotor);
     diffDrive.arcadeDrive(xSpeed.getAsDouble()*kMaxSpeed, rot.getAsDouble()*kMaxAngularSpeed);
   }
   
@@ -103,7 +106,7 @@ public class Drivetrain extends SubsystemBase{
   // Resets robot odometry. 
   public void resetOdometry(Pose2d pose) {
     drivetrainSimulator.setPose(pose);
-   // odometry.resetPosition(/*Add the appropriate arguments here.*/ );
+    odometry.resetPosition(gyro.getRotation2d(), leftEncoder.getDistance(), rightEncoder.getDistance(), pose);
   }
 
   /** Check the current robot pose. */
@@ -135,5 +138,13 @@ public class Drivetrain extends SubsystemBase{
   public void periodic() {
     updateOdometry();
     fieldSim.setRobotPose(odometry.getPoseMeters());
+  }
+
+  public InstantCommand setMaxSpeed(double maxSpeed) {
+    return new InstantCommand(()->
+    {
+      kMaxSpeed = maxSpeed;
+    }
+    );
   }
 }

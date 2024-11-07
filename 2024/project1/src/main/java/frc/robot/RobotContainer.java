@@ -32,11 +32,15 @@ public class RobotContainer {
     controller.a().onTrue(motorSubsystem.forward());
     controller.b().onTrue(motorSubsystem.stop());
 
-    drivetrain.setDefaultCommand(drivetrain.arcadeDrive(()->
+    /*
+     * drivetrain.setDefaultCommand(drivetrain.arcadeDrive(()->
     {
          Controller.getLeftX(); 
          Controller.getLeftY();
     }));
+     */
+    
+
     //Controller.leftStick().
   }
 
